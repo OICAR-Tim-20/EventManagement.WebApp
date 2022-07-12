@@ -25,9 +25,17 @@ import {
 import ProfilePage from '../auth/Profile';
 import UserProfilesPage from '../../pages/profile/UserProfilesPage';
 import EventCard from '../event/EventCard';
-import { EEvent } from '../../models/domain';
-import { Button, Grid } from '@mui/material';
+import { EEvent, User } from '../../models/domain';
+import { Button, CircularProgress, Grid } from '@mui/material';
 import { margin } from '@mui/system';
+import UserContext from '../../context/UserContext';
+import authService from '../../services/auth.service';
+import { AxiosResponse } from 'axios';
+import EventDetails from '../event/EventDetails';
+import NewEventDetails from '../event/NewEventDetails';
+import eventService from '../../services/event.service';
+import { BarChart, EventAvailable, People, Person } from '@mui/icons-material';
+import StatisticsPage from '../../pages/statistics/StatisticsPage';
 
 const drawerWidth = 240;
 
@@ -80,9 +88,73 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+export function UsersMenu() {
+  return (
+    <ListItem button>
+            <ListItemIcon>
+              <People />
+              <Link to="/profiles" style={{ textDecoration: 'none', color: 'black' }}>
+                User profiles
+                </Link>
+            </ListItemIcon>
+    </ListItem>
+  )
+}
+
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [username, setUsername] = React.useState<string | undefined>('')
+  const [userType, setUserType] = React.useState<number>(0)
+  const [message, setMessage] = React.useState<string | undefined>('')
+  const [evnts, setEvents] = React.useState<EEvent[]>([])
+
+  const setUserToContext = async (response: AxiosResponse<any, any>) => {
+       localStorage.setItem('userdata', JSON.stringify(response.data));
+       localStorage.setItem('username', response.data.username)
+       setUsername(response.data.username)
+  }
+
+
+  const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    if(localStorage.getItem('userdata') === null) {
+       getCurrentProfile()
+    } else {
+      let user: User = JSON.parse(localStorage.getItem('userdata')!)
+      setUserType(user.userType)
+      setUsername(localStorage.getItem('username')!)
+      getEventsByUserId(user.userId)
+    }
+  },[])
+
+  const getCurrentProfile = async () => {
+    debugger;
+    setLoading(true)
+    await authService.getCurrentUser()
+    .then(async (response) => { 
+      setUserToContext(response)
+      setLoading(false) })
+    .catch((error) => {
+      setLoading(false)
+    })
+    let userFromLs = localStorage.getItem('username') === null ? '' : localStorage.getItem('username')
+    setUsername(userFromLs!);
+  }
+
+  const getEventsByUserId = async (id: number) => {
+    setLoading(true)
+     await eventService.getEventsByUserId(id)
+     .then(response => {
+        setEvents(response.data)
+        setLoading(false)
+     })
+     .catch(error => {
+        setMessage(error)
+        setLoading(false)
+     })
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -91,114 +163,6 @@ export default function PersistentDrawerLeft() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const evnts: EEvent[] = [
-    {
-      eventId: 0,
-    title: "INMUSIC Festival",
-    startDate: new Date(2022, 6, 20),
-    endDate: new Date(2022, 6, 23),
-    location: {
-      locationId: 0,
-      address: {
-        city: "Zagreb",
-        zipCode: "10000",
-        street: "Otok mladosti",
-        houseNumber: "113"
-      },
-      venue: "Na otoku",
-    },
-    user: undefined,
-    picture: "https://www.inmusicfestival.com/sites/default/files/styles/uc_product/public/inm-fest-ticket-2022-web-bener-640x640pix_2.jpg?itok=KzWfiawC",
-    eventType: "festival",
-    username: "nmarenk",
-    ticketsAvailable: 506,
-    },
-    {
-      eventId: 1,
-    title: "Severina",
-    startDate: new Date(2022, 6, 14),
-    endDate: new Date(2022, 6, 14),
-    location: {
-      locationId: 1,
-      address: {
-        city: "Opatija",
-        zipCode: "10000",
-        street: "Zagrebačka ulica",
-        houseNumber: "666"
-      },
-      venue: "Ljetna pozornica opatija",
-    },
-    user: undefined,
-    picture: "https://content.eventim.com/static/uploaded/at/t/r/n/j/trnj_960_360.webp",
-    eventType: "koncert",
-    username: "nmarenk",
-    ticketsAvailable: 122,
-    },
-    {
-      eventId: 2,
-    title: "The Cure",
-    startDate: new Date(2022, 10, 27),
-    endDate: new Date(2022, 10, 27),
-    location: {
-      locationId: 2,
-      address: {
-        city: "Zagreb",
-        zipCode: "10000",
-        street: "Strossmayerova",
-        houseNumber: "43"
-      },
-      venue: "Arena Zagreb",
-    },
-    user: undefined,
-    picture: "https://content.eventim.com/static/uploaded/at/l/s/m/g/lsmg_960_360.webp",
-    eventType: "koncert",
-    username: "nmarenk",
-    ticketsAvailable: 32,
-    },
-    {
-      eventId: 3,
-    title: "Tom Odell",
-    startDate: new Date(2022, 6, 20),
-    endDate: new Date(2022, 6, 20),
-    location: {
-      locationId: 3,
-      address: {
-        city: "Zagreb",
-        zipCode: "10000",
-        street: "Šubićeva",
-        houseNumber: "65"
-      },
-      venue: "Tvornica kulture",
-    },
-    user: undefined,
-    picture: "https://content.eventim.com/static/uploaded/at/v/i/s/d/visd_960_360.webp",
-    eventType: "koncert",
-    username: "nmarenk",
-    ticketsAvailable: 0,
-    },
-    {
-      eventId: 4,
-      title: "PANNONIAN ROCK FESTIVAL",
-      startDate: new Date(2022, 10, 15),
-      endDate: new Date(2022, 10, 20),
-      location: {
-        locationId: 4,
-        address: {
-          city: "Rajevo Selo",
-          zipCode: "32257",
-          street: "Vladimira Nazora",
-          houseNumber: "56"
-        },
-        venue: "Na otoku",
-      },
-      user: undefined,
-      picture: "https://www.inmusicfestival.com/sites/default/files/styles/uc_product/public/inm-fest-ticket-2022-web-bener-640x640pix_2.jpg?itok=KzWfiawC",
-      eventType: "festival",
-      username: "nmarenk",
-      ticketsAvailable: 202,
-    }
-  ]
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -215,7 +179,7 @@ export default function PersistentDrawerLeft() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Hello, username
+            Hello {username}!
           </Typography>
         </Toolbar>
       </AppBar>
@@ -241,33 +205,25 @@ export default function PersistentDrawerLeft() {
         <List>
           <ListItem button>
             <ListItemIcon>
-              <InboxIcon />
-              <Link to="profile" style={{ textDecoration: 'none', color: 'black' }}>
+              <Person />
+              <Link to="/profile" style={{ textDecoration: 'none', color: 'black' }}>
                 Profile
                 </Link>
             </ListItemIcon>
           </ListItem>
+          {userType === 0  ? <UsersMenu /> : null}
           <ListItem button>
             <ListItemIcon>
-              <InboxIcon />
-              <Link to="profiles" style={{ textDecoration: 'none', color: 'black' }}>
-              {/* Conditionally render */}
-                User profiles
-                </Link>
-            </ListItemIcon>
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <InboxIcon />
-              <Link to="profile" style={{ textDecoration: 'none', color: 'black' }}>
+              <EventAvailable />
+              <Link to="/calendar" style={{ textDecoration: 'none', color: 'black' }}>
                 All Events
                 </Link>
             </ListItemIcon>
           </ListItem>
           <ListItem button>
             <ListItemIcon>
-              <InboxIcon />
-              <Link to="profile" style={{ textDecoration: 'none', color: 'black' }}>
+              <BarChart />
+              <Link to="/statistics" style={{ textDecoration: 'none', color: 'black' }}>
                 Statistics
                 </Link>
             </ListItemIcon>
@@ -276,25 +232,27 @@ export default function PersistentDrawerLeft() {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        {/* Conditionally render - if has no events: you havent created any events */}
+        {loading ? <CircularProgress /> : null} 
         <Typography variant='h3'>
-          Here are your events
+          {evnts.length === 0 ? "You haven't created any events!" : "Here are your events"}
         </Typography>
+        <Button variant='contained'><Link to="events/new" style={{ textDecoration: 'none', color: 'black' }}>Create new event</Link></Button>
         <Box sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}>
-            <Button variant='contained'>Add new event</Button>
             <Grid container spacing={8} sx={{marginLeft: 10}}>
-        {evnts.map((evnt => <EventCard key={evnt.eventId} evnt={evnt} />))}
+        {evnts.map((evnt => <EventCard key={evnt.id} evnt={evnt} />))}
         </Grid>
           </Box>
       </Main>
       <Routes>
         <Route path="profile" element={<ProfilePage />} />
         <Route path="profiles" element={<UserProfilesPage />} />
+        <Route path="events/new" element={<NewEventDetails />} />
+        <Route path='statistics' element={<StatisticsPage />} />
       </Routes>
     </Box>
   );

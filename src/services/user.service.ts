@@ -11,6 +11,14 @@ class UserService {
   getAllUsers() {
     return axios.get('/api/User/', {withCredentials: true})
   }
+
+  getUserById = (id: number) => {
+    return axios.get(`/api/User/${id}`, {withCredentials: true})
+  }
+
+  deleteUser = (id: number) => {
+    return axios.delete(`/api/User/${id}`, {withCredentials: true})
+  }
 }
 
 export default new UserService();

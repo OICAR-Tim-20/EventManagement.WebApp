@@ -1,72 +1,56 @@
 import { useState, useEffect } from 'react';
-import { Container, CssBaseline, Box, Typography, Grid, Button, AlertColor, Alert, CircularProgress } from '@mui/material';
+import { Container, CssBaseline, Box, Avatar, Typography, Grid, TextField, Button, AlertColor, Alert, CircularProgress } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { User } from '../../models/domain';
 import * as yup from 'yup'
 import { Formik, FormikHelpers, FormikProps, Form, Field } from "formik";
 import { FormTextField } from '../FormTextField'
+
+import AuthService from '../../services/auth.service';
 import userService from '../../services/user.service';
+import UserContext from '../../context/UserContext';
+import { useParams } from 'react-router-dom';
+import authService from '../../services/auth.service';
 
-const validationSchema = yup.object().shape({
-    userId: yup.number(),
-    username: yup.string().required("Required"),
-    email: yup.string().email("Invalid email format").required("Required"),
-    contactName: yup.string(),
-    phoneNumber: yup.string().min(6, "Number needs to have minimum 6 digits."),
-    address: yup.object().shape({
-      city: yup.string(),
-      zipCode: yup.string(),
-      street: yup.string(),
-      houseNumber: yup.string(),
-    }).nullable(true),
-    addressId: yup.number().nullable(true),
-    events: yup.array().nullable(true),
-    picture: yup.string()
-});
+// const validationSchema: yup.SchemaOf<User> = yup.object().shape({
+//     userId: yup.number(),
+//     username: yup.string().required("Required"),
+//     email: yup.string().email("Invalid email format").required("Required"),
+//     contactName: yup.string(),
+//     phoneNumber: yup.string().min(6, "Number needs to have minimum 6 digits."),
+//     address: yup.object().shape({
+//       city: yup.string(),
+//       zipCode: yup.string(),
+//       street: yup.string(),
+//       houseNumber: yup.string(),
+//     }).nullable(true),
+//     addressId: yup.number().nullable(true),
+//     events: yup.array().nullable(true),
+//     picture: yup.string(),
+//     userType: yup.number()
+// });
 
-const Profile = () => {
-  const [user, setUser] = useState<User>({
-    userId: 0,
-    username: '',
-    email: '',
-    contactName: '',
-    phoneNumber: '',
-    address: {
-      city: '',
-      zipCode: '',
-      street: '',
-      houseNumber: ''
-    },
-    addressId: 0,
-    events: [],
-    picture: '',
-    userType: 0 
-  })
+const UserAdministration = () => {
+
+  const {id} = useParams()
+  const [user, setUser] = useState<User>()
   const [message, setMessage] = useState<string>('')
   const [successful, setSuccessful] = useState<boolean | null>(null);
   const [alertType, setAlertType] = useState<AlertColor>("success")
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    setUserFromDb()
-  }, [])
-  
-
-  const setUserFromDb = async () => {
-    setLoading(true)
-    let deserializedUser: User = JSON.parse(localStorage.getItem('userdata')!);
-    await userService.getUserById(deserializedUser.userId)
-    .then(response => {
-      setUser(response.data)
-      localStorage.removeItem('userdata')
-      localStorage.removeItem('username')
-      localStorage.setItem('userdata', JSON.stringify(response.data))
-      localStorage.setItem('username', response.data.username)
-      setLoading(false)
+  const getUserWithId = async (id: number) => {
+   setLoading(true)
+   await userService.getUserById(id)
+    .then((response) => {
+        setUser(response.data)
+        setLoading(false)
     })
-    .catch(error => {
-      setUser(error)
-      setLoading(false)
-      setMessage(error)
+    .catch((error) => {
+        setMessage(error)
+        setLoading(false)
+        setSuccessful(false)
+        setAlertType("error")
     })
   }
 
@@ -87,6 +71,28 @@ const Profile = () => {
     })
   }
 
+  const deleteUser = (id: number) => {
+    setLoading(true)
+    userService.deleteUser(+id!)
+    .then((response) => {
+      setMessage(response.data);
+      setLoading(false)
+      setSuccessful(true)
+      setAlertType("success")
+    })
+    .catch((error) => {
+      setMessage(error)
+      setLoading(false)
+      setSuccessful(false)
+      setAlertType("error")
+    })
+  }
+
+  useEffect(() => {
+    getUserWithId(+id!)
+  }, [])
+  
+
   return (
     <Container component="main" maxWidth="md">
       <CssBaseline />
@@ -101,7 +107,7 @@ const Profile = () => {
           <Typography component="h1" variant="h5">
             Update profile
           </Typography>
-          <Formik initialValues={user!} validationSchema={validationSchema} enableReinitialize onSubmit={(values: User, formikHelpers: FormikHelpers<User>) => {handleSubmit(values); formikHelpers.setSubmitting(false)}}>
+          <Formik initialValues={user!} enableReinitialize onSubmit={(values: User, formikHelpers: FormikHelpers<User>) => {handleSubmit(values); formikHelpers.setSubmitting(false)}}>
           {(formikProps: FormikProps<User>) => (
             <Form>
             <Grid container spacing={2}>
@@ -223,7 +229,15 @@ const Profile = () => {
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  Update
+                  Update User
+                </Button>
+                <Button
+                  variant="contained"
+                  color='error'
+                  sx={{ mt: 3, mb: 2, marginLeft: 3}}
+                  onClick={() => {deleteUser(+id!)}}
+                >
+                  Delete User
                 </Button>
                 </Form>
           )}
@@ -234,4 +248,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default UserAdministration

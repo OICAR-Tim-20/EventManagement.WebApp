@@ -2,7 +2,7 @@ import { Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import React from 'react'
-import { EEvent } from '../../models/domain';
+import { EEvent, User } from '../../models/domain';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
@@ -13,14 +13,13 @@ interface EventProp  {
 const EventCard = (props: EventProp) => {
 
   const {evnt} = props
+  const user: User = JSON.parse(localStorage.getItem('userdata')!)
 
   return (
     <Card sx={{ maxWidth: 345, margin: 3 }} >
         <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: 'red' }} aria-label="recipe">
-            {evnt.username}
-          </Avatar>
+          <Avatar sx={{ bgcolor: 'red' }} aria-label="recipe" src={user.picture} />
         }
         action={
           <IconButton aria-label="settings">
@@ -46,7 +45,7 @@ const EventCard = (props: EventProp) => {
       <Typography>Dostupno ulaznica: {evnt.ticketsAvailable}</Typography>
     </CardContent>
     <CardActions>
-      <Link to={`/events/${evnt.eventId}`}>
+      <Link to={`/events/${evnt.id}`}>
         <Button size="small">Detalji</Button>
       </Link>
     </CardActions>

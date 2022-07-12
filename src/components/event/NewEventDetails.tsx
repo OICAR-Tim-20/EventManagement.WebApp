@@ -1,19 +1,16 @@
 import { Alert, AlertColor, Box, Button, CircularProgress, Container, CssBaseline, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Field, Form, Formik, FormikHelpers } from 'formik'
+import { Field, Form, Formik, FormikHelpers, validateYupSchema } from 'formik'
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
 import { EEvent, Location } from '../../models/domain'
 import EventService from '../../services/event.service'
 import { FormTextField } from '../FormTextField';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import LocationsTable from '../locations/LocationsTable';
-import eventService from '../../services/event.service';
+import NewLocation from '../locations/NewLocation';
 
-const EventDetails = () => {
-
-  const {id} = useParams()
+const NewEventDetails = () => {
 
   const [location, setLocation] = useState<Location>({
     locationId: 0,
@@ -42,8 +39,8 @@ const EventDetails = () => {
       },
       venue: ''
     },
-    username: '',
-    eventType: 'Festival',
+    username: localStorage.getItem('username')!,
+    eventType: 'Concert',
     ticketsAvailable: 0,
     picture: ''
   })
@@ -55,34 +52,17 @@ const EventDetails = () => {
   const [expanded, setExpanded] = useState<string | false>(false);
 
   useEffect(() => {
-    getEventById(id!);
-  }, [])
-  
-  useEffect(() => {
-      setEvent(prevState => ({
+    setEvent(prevState => ({
         ...evnt,
         location: location,
         locationId: location.locationId
     }))
   }, [location])
   
-  const getEventById = async (id: string) => {
-    setLoading(true)
-    await EventService.getEventById(id)
-    .then((response) => {
-      setEvent(response.data)
-      setLoading(false)
-    })
-    .catch((error) => {
-      setMessage(error)
-      setLoading(false)
-    })
-  }
-
   const handleSubmit = (values: EEvent) => {
-        values.id = +id!
+        setLoading(true)
         values.username = localStorage.getItem('username')!;
-        EventService.updateEvent(values)
+        EventService.createEvent(values)
       .then((response) => {
         setMessage(response.data);
         setLoading(false)
@@ -92,41 +72,29 @@ const EventDetails = () => {
       .catch((error) => {
         setMessage(error)
         setLoading(false)
-        setSuccessful(false)
-        setAlertType("error")     
+        setMessage(error)
+        setLoading(false)
       })
   }
 
-  const deleteEvent = (id: number) => {
-    eventService.deleteEvent(id)
-    .then((response) => {
-      setMessage(response.data);
-      setLoading(false)
-    })
-    .catch((error) => {
-      setMessage(error)
-      setLoading(false)
-    })
-  }
-
   return (
-    <Container component="main" maxWidth="md">
+    <Container component="main" maxWidth="lg">
       <CssBaseline />
       <Box
           sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: 'center'
           }}
         >
           <Typography component="h1" variant="h5">
-            Update Event
+            Create Event
           </Typography>
           <br></br>
           <Formik initialValues={evnt} enableReinitialize onSubmit={(values: EEvent, formikHelpers: FormikHelpers<EEvent>) => {handleSubmit(values); formikHelpers.setSubmitting(false)}}>
             <Form>
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{border: '1px solid grey'}}>
               {loading ? <CircularProgress /> : null} 
                 <Grid item xs={12} sm={12}>
                 <Field
@@ -156,7 +124,7 @@ const EventDetails = () => {
                         ...evnt,
                         startDate: newValue
                       }))
-                    }}
+                   }}
                     renderInput={(params) => <TextField {...params} />}
                      />
                 </LocalizationProvider>
@@ -168,10 +136,10 @@ const EventDetails = () => {
                     label="End Date"
                     value={evnt.endDate}
                     onChange={(newValue) => {
-                      setEvent(prevState => ({
-                          ...evnt,
-                          endDate: newValue
-                        }))
+                        setEvent(prevState => ({
+                            ...evnt,
+                            endDate: newValue
+                          }))
                     }}
                     renderInput={(params) => <TextField {...params} />}
                      />
@@ -182,11 +150,11 @@ const EventDetails = () => {
                         labelId="eventType"
                         id="eventType"
                         value={evnt.eventType}
-                        label="Event Type"
                         onChange={(newValue) => setEvent(prevState => ({
-                          ...evnt,
-                          eventType: newValue.target.value
-                        }))}
+                            ...evnt,
+                            eventType: newValue.target.value
+                          }))}
+                        sx={{ minWidth: 130 }}
                         >
                           <MenuItem value={'Concert'}>Concert</MenuItem>
                           <MenuItem value={'Festival'}>Festival</MenuItem>
@@ -202,13 +170,13 @@ const EventDetails = () => {
                       name={"ticketsAvailable"}
                       autoComplete="ticketsAvailable"
                       value={evnt?.ticketsAvailable}
-                      component={FormTextField}
                       onChange={(newValue: string) => {
                         setEvent(prevState => ({
                           ...evnt,
                           ticketsAvailable: +newValue
                         }))
                      }}
+                      component={FormTextField}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -220,13 +188,13 @@ const EventDetails = () => {
                       name={"picture"}
                       autoComplete="picture"
                       value={evnt?.picture}
+                      component={FormTextField}
                       onChange={(newValue: string) => {
                         setEvent(prevState => ({
                           ...evnt,
                           picture: newValue
                         }))
-                      }}
-                      component={FormTextField}
+                     }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -247,28 +215,23 @@ const EventDetails = () => {
                     <Typography>Available Locations</Typography>
                    <LocationsTable setLocation={setLocation} />
                   </Grid>
+                  <Grid item xs={12} sm={6}>
                   <Button
                   type="submit"
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  Update Event
+                  Create Event
                 </Button>
-                <Button
-                  variant="contained"
-                  color='error'
-                  sx={{ mt: 3, mb: 2, marginLeft: 3}}
-                  onClick={() => {deleteEvent(+id!)}}
-                >
-                  Delete Event
-                </Button>
+                </Grid>
               </Grid>
               {successful ? <Alert severity={alertType}>{message}</Alert> : null}
             </Form>
           </Formik>
           </Box>
+        <NewLocation />
     </Container>
   )
 }
 
-export default EventDetails
+export default NewEventDetails

@@ -1,4 +1,5 @@
 import { Avatar, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
 import { User } from '../../models/domain'
 
 interface UserProp {
@@ -9,10 +10,9 @@ const UserProfileCard = (props : UserProp) => {
   const {user} = props
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 200, margin: 3 }}>
     <Avatar
-        alt="Remy Sharp"
-        src="/static/images/avatar/1.jpg"
+        src={user.picture}
         sx={{ width: 56, height: 56 }}
       />
     <CardContent>
@@ -24,7 +24,7 @@ const UserProfileCard = (props : UserProp) => {
       </Typography>
     </CardContent>
     <CardActions>
-      <Button size="small">Learn More</Button>
+      <Button size="small"><Link to={`/profiles/${user.userId}`}>Detalji</Link></Button>
     </CardActions>
   </Card>
   )

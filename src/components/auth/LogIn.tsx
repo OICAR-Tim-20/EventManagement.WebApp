@@ -43,9 +43,6 @@ const Login = () => {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-        <Typography align="center">
-          Submit the form with empty fields to view validation errors.
-        </Typography>
       </Box>
       <Formik
         initialValues={{

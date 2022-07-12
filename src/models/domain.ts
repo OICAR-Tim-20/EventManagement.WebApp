@@ -8,6 +8,7 @@ export interface User{
     picture: string,
     userId: number,
     username: string
+    userType: number
 }
 
 export interface Address{
@@ -18,16 +19,21 @@ export interface Address{
 }
 
 export interface EEvent{
-    eventId: number
+    id: number
     title: string,
-    startDate: Date,
-    endDate: Date,
+    startDate: Date | null,
+    endDate: Date | null,
+    locationId: number
     location: Location
-    user: User | undefined,
     username: string,
     eventType: string,
     ticketsAvailable: number,
     picture: string | undefined
+}
+
+export interface EventBlock {
+    date: Date,
+    eventDTOs: EEvent[]
 }
 
 export interface Location {

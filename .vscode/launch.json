@@ -2,16 +2,9 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "launch",
-      "name": "localhost (Chrome)",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "edge",
-      "request": "launch",
-      "name": "localhost (Edge)",
+      "name": "Chrome",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
     }

@@ -1,5 +1,4 @@
 import axios from "axios";
-import {User} from '../models/domain'
 
 class AuthService{
 
