@@ -66,6 +66,8 @@ const validationSchema = yup.object().shape({
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          </Box>
+          <br />
           <Formik
         initialValues={{
           username: "",
@@ -83,6 +85,7 @@ const validationSchema = yup.object().shape({
       >
         {(formikProps: FormikProps<FormValues>) => (
           <Form noValidate autoComplete="off">
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Field
                   name="username"
@@ -99,6 +102,7 @@ const validationSchema = yup.object().shape({
                   size="small"
                   component={FormTextField}
                 />
+               </Grid>
               <Grid item xs={12}>
                 <Field
                   name="password"
@@ -120,11 +124,10 @@ const validationSchema = yup.object().shape({
                 </Button>
                 {message}
               </Grid>
-            </Grid>
+              </Grid>
           </Form>
         )}
       </Formik>
-        </Box>
         {successful ? <Alert severity={alertType}>{message}</Alert> : null}
       </Container>
   );

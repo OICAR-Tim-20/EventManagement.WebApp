@@ -17,7 +17,7 @@ function App() {
   return (
       <Router>
        <Routes>
-          <Route path="*" element={ localStorage.getItem('userdata') === null ? <Auth /> : <Home/>} />
+          <Route path="*" element={ <Home/>} />
           <Route path='/auth' element={<Auth/>} />
           <Route path='/profile' element={<ProfilePage/>}/>
           <Route path="/profiles" element={<UserProfilesPage />} />

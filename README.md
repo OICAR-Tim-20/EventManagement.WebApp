@@ -3,6 +3,9 @@
 
 ## U root direktoriju dostupne su slijedeće skripte:
 
+### `npm install`
+Instalira sve potrebne pakete kako bi se aplikacija mogla lokalno pokrenuti.
+
 ### `npm start`
 Pokreće aplikaciju na portu 3000(http://localhost:3000)
 

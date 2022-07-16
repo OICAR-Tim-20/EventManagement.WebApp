@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Container, Typography, Grid, Button, Box, Avatar } from '@mui/material';
+import { Container, Typography, Grid, Button, Box, Avatar, CssBaseline } from '@mui/material';
 import { Formik, FormikHelpers, FormikProps, Form, Field } from "formik";
 import { FormTextField } from '../FormTextField'
 import { useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import AuthService from '../../services/auth.service';
 import * as yup from "yup";
+import authService from '../../services/auth.service';
 
 interface FormValues {
   username: string;
@@ -25,25 +26,45 @@ const Login = () => {
   const handleSubmit = (values: any) => {
     AuthService.login(values.username, values.password)
       .then((response) => {
-        navigate('/');
-        window.location.reload();
+        setMessage(response.data)
       },
       (error) => {
       const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       setMessage(resMessage);
       })
+      getCurrentProfile()
+      navigate('/');
+      window.location.reload();
+  }
+
+  const getCurrentProfile = async () => {
+    await authService.getCurrentUser()
+    .then((response) => {
+        localStorage.setItem('userdata', JSON.stringify(response.data));
+        localStorage.setItem('username', response.data.username)
+    })
+    .catch((error) => 
+      setMessage(error)
+    )
   }
 
   return (
     <Container maxWidth="md">
-      <Box mb={3} p={2}>
+      <CssBaseline />
+      <Box sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
       <Avatar sx={{ bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Sign in
           </Typography>
       </Box>
+      <br />
       <Formik
         initialValues={{
           username: "",

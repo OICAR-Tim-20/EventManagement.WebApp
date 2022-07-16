@@ -42,6 +42,7 @@ const NewEventDetails = () => {
     username: localStorage.getItem('username')!,
     eventType: 'Concert',
     ticketsAvailable: 0,
+    ticketPrice: 0,
     picture: ''
   })
 
@@ -193,6 +194,24 @@ const NewEventDetails = () => {
                         setEvent(prevState => ({
                           ...evnt,
                           picture: newValue
+                        }))
+                     }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                  <Field
+                      required
+                      fullWidth
+                      id="ticketPrice"
+                      label="Ticket price"
+                      name={"ticketPrice"}
+                      autoComplete="ticketPrice"
+                      value={evnt?.ticketPrice}
+                      component={FormTextField}
+                      onChange={(newValue: string) => {
+                        setEvent(prevState => ({
+                          ...evnt,
+                          ticketPrice: +newValue
                         }))
                      }}
                     />

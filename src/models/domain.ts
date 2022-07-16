@@ -28,6 +28,7 @@ export interface EEvent{
     username: string,
     eventType: string,
     ticketsAvailable: number,
+    ticketPrice: number,
     picture: string | undefined
 }
 

@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { EEvent, Location } from '../../models/domain'
 import EventService from '../../services/event.service'
 import { FormTextField } from '../FormTextField';
@@ -12,6 +12,7 @@ import LocationsTable from '../locations/LocationsTable';
 import eventService from '../../services/event.service';
 
 const EventDetails = () => {
+  const navigate = useNavigate()
 
   const {id} = useParams()
 
@@ -45,6 +46,7 @@ const EventDetails = () => {
     username: '',
     eventType: 'Festival',
     ticketsAvailable: 0,
+    ticketPrice: 0,
     picture: ''
   })
 
@@ -88,6 +90,10 @@ const EventDetails = () => {
         setLoading(false)
         setSuccessful(true)
         setAlertType("success")
+        setTimeout(function(){
+          navigate(-1)
+        }, 2000);
+        
       })
       .catch((error) => {
         setMessage(error)
@@ -102,10 +108,14 @@ const EventDetails = () => {
     .then((response) => {
       setMessage(response.data);
       setLoading(false)
+      setSuccessful(true)
+      setAlertType("success")
     })
     .catch((error) => {
       setMessage(error)
       setLoading(false)
+      setSuccessful(false)
+      setAlertType("error")     
     })
   }
 
@@ -195,6 +205,7 @@ const EventDetails = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                   <Field
+                      disabled
                       required
                       fullWidth
                       id="ticketsAvailable"
@@ -227,6 +238,25 @@ const EventDetails = () => {
                         }))
                       }}
                       component={FormTextField}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                  <Field
+                      disabled
+                      required
+                      fullWidth
+                      id="ticketPrice"
+                      label="Ticket price"
+                      name={"ticketPrice"}
+                      autoComplete="ticketPrice"
+                      value={evnt?.ticketPrice}
+                      component={FormTextField}
+                      onChange={(newValue: string) => {
+                        setEvent(prevState => ({
+                          ...evnt,
+                          ticketPrice: +newValue
+                        }))
+                     }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>

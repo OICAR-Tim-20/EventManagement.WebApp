@@ -6,34 +6,49 @@ import * as yup from 'yup'
 import { Formik, FormikHelpers, FormikProps, Form, Field } from "formik";
 import { FormTextField } from '../FormTextField'
 
-import AuthService from '../../services/auth.service';
 import userService from '../../services/user.service';
-import UserContext from '../../context/UserContext';
-import { useParams } from 'react-router-dom';
-import authService from '../../services/auth.service';
+import { useNavigate, useParams } from 'react-router-dom';
 
-// const validationSchema: yup.SchemaOf<User> = yup.object().shape({
-//     userId: yup.number(),
-//     username: yup.string().required("Required"),
-//     email: yup.string().email("Invalid email format").required("Required"),
-//     contactName: yup.string(),
-//     phoneNumber: yup.string().min(6, "Number needs to have minimum 6 digits."),
-//     address: yup.object().shape({
-//       city: yup.string(),
-//       zipCode: yup.string(),
-//       street: yup.string(),
-//       houseNumber: yup.string(),
-//     }).nullable(true),
-//     addressId: yup.number().nullable(true),
-//     events: yup.array().nullable(true),
-//     picture: yup.string(),
-//     userType: yup.number()
-// });
+const validationSchema = yup.object().shape({
+  userId: yup.number(),
+  username: yup.string().required("Required"),
+  email: yup.string().email("Invalid email format").required("Required"),
+  contactName: yup.string(),
+  phoneNumber: yup.string().min(6, "Number needs to have minimum 6 digits."),
+  address: yup.object().shape({
+    city: yup.string(),
+    zipCode: yup.string(),
+    street: yup.string(),
+    houseNumber: yup.string(),
+  }).nullable(true),
+  addressId: yup.number().nullable(true),
+  events: yup.array().nullable(true),
+  picture: yup.string()
+});
 
 const UserAdministration = () => {
+  const navigate = useNavigate()
 
   const {id} = useParams()
-  const [user, setUser] = useState<User>()
+  const [user, setUser] = useState<User>(
+    {
+      userId: 0,
+      username: '',
+      email: '',
+      contactName: '',
+      phoneNumber: '',
+      address: {
+        city: '',
+        zipCode: '',
+        street: '',
+        houseNumber: ''
+      },
+      addressId: 0,
+      events: [],
+      picture: '',
+      userType: 0 
+    }
+  )
   const [message, setMessage] = useState<string>('')
   const [successful, setSuccessful] = useState<boolean | null>(null);
   const [alertType, setAlertType] = useState<AlertColor>("success")
@@ -79,6 +94,10 @@ const UserAdministration = () => {
       setLoading(false)
       setSuccessful(true)
       setAlertType("success")
+      setTimeout(function(){
+        navigate(-1);
+      }, 2000);
+
     })
     .catch((error) => {
       setMessage(error)
@@ -107,7 +126,7 @@ const UserAdministration = () => {
           <Typography component="h1" variant="h5">
             Update profile
           </Typography>
-          <Formik initialValues={user!} enableReinitialize onSubmit={(values: User, formikHelpers: FormikHelpers<User>) => {handleSubmit(values); formikHelpers.setSubmitting(false)}}>
+          <Formik initialValues={user!} validationSchema={validationSchema} enableReinitialize onSubmit={(values: User, formikHelpers: FormikHelpers<User>) => {handleSubmit(values); formikHelpers.setSubmitting(false)}}>
           {(formikProps: FormikProps<User>) => (
             <Form>
             <Grid container spacing={2}>
