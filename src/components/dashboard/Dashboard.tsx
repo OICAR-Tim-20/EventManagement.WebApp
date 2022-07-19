@@ -130,7 +130,6 @@ export default function PersistentDrawerLeft() {
   },[])
 
   const getCurrentProfile = async () => {
-    debugger;
     setLoading(true)
     await authService.getCurrentUser()
     .then(async (response) => { 

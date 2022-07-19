@@ -1,30 +1,19 @@
-import { CircularProgress } from '@mui/material'
+import { CircularProgress, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { Bar, BarChart, ResponsiveContainer } from 'recharts'
-import { string } from 'yup'
-import { number } from 'yup/lib/locale'
+import { Bar, BarChart, Legend, Tooltip, XAxis } from 'recharts'
+
 import statisticsService from '../../services/statistics.service'
 
-
 interface ChartData {
-    key: string,
-    value: [{
-      key: string,
-      value: number
-    }]
+    year: number,
+    numberOfConcerts: number,
+    numberOfFestivals: number,
+    numberOfParties: number
  }
 
 const EventTypesByYearChart = () => {
 
-  const [data, setData] = useState<ChartData[]>(
-    [{
-      key: '2022',
-      value: [{
-        key: 'Fest',
-        value: 9
-      }]
-    }]
-  )
+  const [data, setData] = useState<ChartData[]>([])
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('')
 
@@ -33,7 +22,6 @@ const EventTypesByYearChart = () => {
   }, [])
   
   const getEventTypesByYear = async () => {
-    debugger;
       setLoading(true)
       await statisticsService.EventTypesByYear()
      .then((response) => {
@@ -47,11 +35,16 @@ const EventTypesByYearChart = () => {
   }
 
   return (
-    <div>
+    <div style={{margin: '20px'}}>
         {loading ? <CircularProgress /> : null}
         {message}
+        <Typography variant='h4'>Event types by year</Typography>
         <BarChart width={300} height={300} data={data}>
-          <Bar dataKey="key" fill="#8884d8" /> 
+          <XAxis dataKey="year" />
+          <Tooltip />
+          <Bar dataKey="numberOfConcerts" fill="#8884d8" />
+          <Bar dataKey="numberOfFestivals" fill="#0088FE" />
+          <Bar dataKey="numberOfParties" fill="#82ca9d" />
         </BarChart>
     </div>
   )

@@ -36,7 +36,7 @@ const validationSchema = yup.object().shape({
   const handleSubmit = (values: any) => {
     AuthService.register(values.username, values.email, values.password)
     .then((response) => {
-      setMessage(response.data.message);
+      setMessage(response.data);
       setAlertType("success")
       setSuccessful(true);
     },

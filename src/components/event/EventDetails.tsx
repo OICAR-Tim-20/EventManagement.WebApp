@@ -110,6 +110,9 @@ const EventDetails = () => {
       setLoading(false)
       setSuccessful(true)
       setAlertType("success")
+      setTimeout(function(){
+        navigate(-1)
+      }, 2000);
     })
     .catch((error) => {
       setMessage(error)

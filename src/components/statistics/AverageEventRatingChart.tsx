@@ -1,56 +1,49 @@
-import React from 'react'
-import { Bar, BarChart } from 'recharts';
+import { CircularProgress, Typography } from '@mui/material';
+import { useEffect, useState } from 'react'
+import { Bar, BarChart, LabelList, Legend, Tooltip, XAxis } from 'recharts';
+import statisticsService from '../../services/statistics.service';
 
-const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100
-    }
-  ];
+interface ChartData {
+  key: string,
+  value: number
+}
 
 const AverageEventRatingChart = () => {
+
+  const [data, setData] = useState<ChartData[]>([])
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('')
+
+  useEffect(() => {
+    getEventTypesByYear()
+  }, [])
+  
+  const getEventTypesByYear = async () => {
+      setLoading(true)
+      await statisticsService.AverageRatingsByEvent()
+     .then((response) => {
+        setData(response.data)
+        setLoading(false);
+     })
+     .catch((error) => {
+        setMessage(error)
+        setLoading(false)
+     })
+  }
+
     return (
-        <BarChart width={300} height={300} data={data}>
-          <Bar dataKey="uv" fill="#8884d8" />
-        </BarChart>
+      <div style={{margin: '20px'}}>
+      {loading ? <CircularProgress /> : null}
+      {message}
+      <Typography variant='h4'>3 Top rated events</Typography>
+      <BarChart width={300} height={300} data={data}>
+        <Tooltip />
+        <Bar dataKey="value" fill="#e74c3c">
+          <XAxis dataKey="value"></XAxis>
+          <LabelList dataKey="key" position="top" />
+        </Bar>
+      </BarChart>
+  </div>
       );
 }
 

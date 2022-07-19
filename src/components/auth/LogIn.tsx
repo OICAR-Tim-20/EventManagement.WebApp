@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Typography, Grid, Button, Box, Avatar, CssBaseline } from '@mui/material';
+import { Container, Typography, Grid, Button, Box, Avatar, CssBaseline, AlertColor, Alert } from '@mui/material';
 import { Formik, FormikHelpers, FormikProps, Form, Field } from "formik";
 import { FormTextField } from '../FormTextField'
 import { useNavigate } from 'react-router-dom';
@@ -21,20 +21,29 @@ const validationSchema = yup.object().shape({
 const Login = () => {
   let navigate = useNavigate();
 
+  const [successful, setSuccessful] = useState<boolean | null>(null);
+  const [alertType, setAlertType] = useState<AlertColor>("success")
   const [message, setMessage] = useState("")
 
   const handleSubmit = (values: any) => {
     AuthService.login(values.username, values.password)
       .then((response) => {
         setMessage(response.data)
+        setAlertType("success")
+        setSuccessful(true);
+        setTimeout(function(){
+          getCurrentProfile()
+          navigate('/');
+          window.location.reload();
+        }, 2000);
       },
       (error) => {
       const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       setMessage(resMessage);
+      setAlertType("error")
+      setSuccessful(false);
       })
-      getCurrentProfile()
-      navigate('/');
-      window.location.reload();
+      
   }
 
   const getCurrentProfile = async () => {
@@ -115,6 +124,7 @@ const Login = () => {
           </Form>
         )}
       </Formik>
+      {successful ? <Alert severity={alertType}>{message}</Alert> : null}
     </Container>
   );
 }
