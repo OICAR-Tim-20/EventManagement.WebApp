@@ -88,6 +88,7 @@ const validationSchema = yup.object().shape({
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Field
+                  id='register-username'
                   name="username"
                   label="Username"
                   size="small"
@@ -96,6 +97,7 @@ const validationSchema = yup.object().shape({
               </Grid>
               <Grid item xs={12}>
                 <Field
+                  id='register-email'
                   name="email"
                   label="Email"
                   type="email"
@@ -105,6 +107,7 @@ const validationSchema = yup.object().shape({
                </Grid>
               <Grid item xs={12}>
                 <Field
+                  id='register-password'
                   name="password"
                   label="Password"
                   type="password"
@@ -114,6 +117,7 @@ const validationSchema = yup.object().shape({
               </Grid>
               <Grid item xs={12}>
                 <Button
+                  id='register-submit'
                   type="submit"
                   variant="outlined"
                   size="large"
@@ -122,7 +126,6 @@ const validationSchema = yup.object().shape({
                 >
                   Submit
                 </Button>
-                {message}
               </Grid>
               </Grid>
           </Form>

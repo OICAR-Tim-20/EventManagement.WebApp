@@ -28,11 +28,11 @@ const Login = () => {
   const handleSubmit = (values: any) => {
     AuthService.login(values.username, values.password)
       .then((response) => {
-        setMessage(response.data)
+        localStorage.setItem('userdata', JSON.stringify(response));
+        localStorage.setItem('username', response.username)
         setAlertType("success")
         setSuccessful(true);
         setTimeout(function(){
-          getCurrentProfile()
           navigate('/');
           window.location.reload();
         }, 2000);
@@ -46,16 +46,16 @@ const Login = () => {
       
   }
 
-  const getCurrentProfile = async () => {
-    await authService.getCurrentUser()
-    .then((response) => {
-        localStorage.setItem('userdata', JSON.stringify(response.data));
-        localStorage.setItem('username', response.data.username)
-    })
-    .catch((error) => 
-      setMessage(error)
-    )
-  }
+  // const getCurrentProfile = async () => {
+  //   await authService.getCurrentUser()
+  //   .then((response) => {
+  //       localStorage.setItem('userdata', JSON.stringify(response.data));
+  //       localStorage.setItem('username', response.data.username)
+  //   })
+  //   .catch((error) => 
+  //     setMessage(error)
+  //   )
+  // }
 
   return (
     <Container maxWidth="md">
@@ -93,6 +93,7 @@ const Login = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Field
+                  id="login-username"
                   name="username"
                   label="Username"
                   size="small"
@@ -101,6 +102,7 @@ const Login = () => {
               </Grid>
               <Grid item xs={12}>
                 <Field
+                  id="login-password"
                   name="password"
                   label="Password"
                   type="password"
@@ -110,6 +112,7 @@ const Login = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button
+                  id='login-submit'
                   type="submit"
                   variant="outlined"
                   size="large"

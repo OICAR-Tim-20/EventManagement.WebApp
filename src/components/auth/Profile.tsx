@@ -218,6 +218,7 @@ const Profile = () => {
                   </Grid>
                 </Grid>
                 <Button
+                  id='profile-submit'
                   type="submit"
                   disabled={formikProps.isSubmitting}
                   variant="contained"

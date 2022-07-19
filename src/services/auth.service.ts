@@ -3,7 +3,7 @@ import axios from "axios";
 class AuthService{
 
 register = (username: string, email: string, password: string) => {
-  return axios.post("/register", {
+  return axios.post(`https://oicartim04app.azurewebsites.net/register`, {
     username,
     email,
     password,
@@ -12,22 +12,22 @@ register = (username: string, email: string, password: string) => {
 
 login = (username: string, password: string) => {
   return axios
-    .post("/login", {
+    .post(`https://oicartim04app.azurewebsites.net/login`, {
       username,
       password,
-    }, {withCredentials: true})
+    })
     .then((response) => {
       return response.data;
     });
 };
 
 logout = () => {
-  return axios.get("/logout", {withCredentials: true});
+  return axios.get(`https://oicartim04app.azurewebsites.net/logout`);
 };
 
-getCurrentUser = () => {
-  return axios.get("/get_current_user", {withCredentials: true})
-};
+// getCurrentUser = () => {
+//   return axios.get(`https://oicartim04app.azurewebsites.net/get_current_user`)
+// };
 
 }
 

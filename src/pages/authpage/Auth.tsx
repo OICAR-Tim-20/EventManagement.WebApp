@@ -53,8 +53,8 @@ const Auth = () => {
       <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Login" />
-          <Tab label="Register"/>
+          <Tab id='tab-login' label="Login" />
+          <Tab id='tab-register' label="Register"/>
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>

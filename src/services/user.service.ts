@@ -4,20 +4,19 @@ import { User } from '../models/domain';
 class UserService {
 
   updateProfile(user: User) {
-    return axios.put(`/api/User/${user.userId}`, user, 
-    {withCredentials: true})
+    return axios.put(`https://oicartim04app.azurewebsites.net/Api/User/${user.userId}`, user)
   }
 
   getAllUsers() {
-    return axios.get('/api/User/', {withCredentials: true})
+    return axios.get('https://oicartim04app.azurewebsites.net/Api/User/')
   }
 
   getUserById = (id: number) => {
-    return axios.get(`/api/User/${id}`, {withCredentials: true})
+    return axios.get(`https://oicartim04app.azurewebsites.net/Api/User/${id}`)
   }
 
   deleteUser = (id: number) => {
-    return axios.delete(`/api/User/${id}`, {withCredentials: true})
+    return axios.delete(`https://oicartim04app.azurewebsites.net/Api/User/${id}`)
   }
 }
 

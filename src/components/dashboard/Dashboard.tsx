@@ -117,30 +117,35 @@ export default function PersistentDrawerLeft() {
 
 
   const [loading, setLoading] = React.useState(false)
-
   React.useEffect(() => {
-    if(localStorage.getItem('userdata') === null) {
-       getCurrentProfile()
-    } else {
-      let user: User = JSON.parse(localStorage.getItem('userdata')!)
+    // if(localStorage.getItem('userdata') === null) {
+    //    getCurrentProfile()
+    // } else {
+    //   let user: User = JSON.parse(localStorage.getItem('userdata')!)
+    //   setUserType(user.userType)
+    //   setUsername(localStorage.getItem('username')!)
+    //   getEventsByUserId(user.userId)
+    // }
+    let user: User = JSON.parse(localStorage.getItem('userdata')!)
+    if(user != null) {
       setUserType(user.userType)
       setUsername(localStorage.getItem('username')!)
       getEventsByUserId(user.userId)
     }
   },[])
 
-  const getCurrentProfile = async () => {
-    setLoading(true)
-    await authService.getCurrentUser()
-    .then(async (response) => { 
-      setUserToContext(response)
-      setLoading(false) })
-    .catch((error) => {
-      setLoading(false)
-    })
-    let userFromLs = localStorage.getItem('username') === null ? '' : localStorage.getItem('username')
-    setUsername(userFromLs!);
-  }
+  // const getCurrentProfile = async () => {
+  //   setLoading(true)
+  //   await authService.getCurrentUser()
+  //   .then(async (response) => { 
+  //     setUserToContext(response)
+  //     setLoading(false) })
+  //   .catch((error) => {
+  //     setLoading(false)
+  //   })
+  //   let userFromLs = localStorage.getItem('username') === null ? '' : localStorage.getItem('username')
+  //   setUsername(userFromLs!);
+  // }
 
   const getEventsByUserId = async (id: number) => {
     setLoading(true)
